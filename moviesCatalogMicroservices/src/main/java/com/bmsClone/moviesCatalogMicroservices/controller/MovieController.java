@@ -25,7 +25,7 @@ public class MovieController {
     }
 
     @GetMapping("/getMovieDetails/{id}")
-    public ResponseEntity<?> getMovieDetails(@PathVariable String id) throws Exception {
+    public ResponseEntity<?> getMovieDetails(@PathVariable String id) {
         try {
             return ResponseEntity.ok(movieService.getMovieDetails(id));
         } catch (Exception e) {

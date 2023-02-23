@@ -16,7 +16,7 @@ public class TheatreController {
 
 
     @PostMapping("/addTheatre")
-    public ResponseEntity<?> addTheatre(@RequestBody TheatreDto theatreDto) throws Exception {
+    public ResponseEntity<?> addTheatre(@RequestBody TheatreDto theatreDto) {
         try {
             theatreService.addTheatre(theatreDto);
             return ResponseEntity.ok(new Response(true, "Theatre added Successfully"));
@@ -25,8 +25,8 @@ public class TheatreController {
         }
     }
 
-    @GetMapping("/getTheatreDetails")
-    public ResponseEntity<?> getTheatreDetails(@PathVariable String id) throws Exception {
+    @GetMapping("/getTheatreDetails/{id}")
+    public ResponseEntity<?> getTheatreDetails(@PathVariable String id) {
         try {
             return ResponseEntity.ok(theatreService.getTheatreDetails(id));
         } catch (Exception e) {
