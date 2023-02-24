@@ -34,4 +34,13 @@ public class MovieController {
             return ResponseEntity.internalServerError().body(new Response(false, errors.INTERNAL_SERVER_ERROR));
         }
     }
+
+    @GetMapping("/getUpcomingMovies")
+    public ResponseEntity<?> getUpcomingMovies() {
+        try {
+            return ResponseEntity.ok(movieService.getUpcomingMovies());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new Response(false, errors.INTERNAL_SERVER_ERROR));
+        }
+    }
 }

@@ -8,6 +8,7 @@ import com.bmsClone.moviesCatalogMicroservices.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,6 +19,15 @@ public class MovieService {
     public void addMovie(MoviesDto moviesDto) throws Exception {
         try {
             movieRepository.save(moviesDto.toMovie());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
+
+    public List<Movie> getUpcomingMovies() throws Exception {
+        try {
+            return movieRepository.getUpcomingMovies();
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw e;

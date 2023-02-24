@@ -35,4 +35,14 @@ public class TheatreController {
             return ResponseEntity.internalServerError().body(new Response(false, errors.INTERNAL_SERVER_ERROR));
         }
     }
+
+    @GetMapping("/getTheatresByMovie/{id}")
+    public ResponseEntity<?> getTheatresByMovie(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(theatreService.getTheatresByMovie(id));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new Response(false, errors.INTERNAL_SERVER_ERROR));
+        }
+    }
+
 }

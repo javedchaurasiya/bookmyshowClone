@@ -3,5 +3,5 @@ package com.bmsClone.showtimeAndTheatreMicroservices.repository.theatreRepositor
 import com.bmsClone.showtimeAndTheatreMicroservices.models.Theatre;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface TheatreRepository extends MongoRepository<Theatre,String> {
+public interface TheatreRepository extends MongoRepository<Theatre, String>, TheatreRepositoryCustom {
 }
