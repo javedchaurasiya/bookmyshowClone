@@ -18,13 +18,13 @@ public class ShowtimeDto {
     }
 
     public Showtime toShowtime() {
-        Showtime showtime = new Showtime();
-        showtime.setMovieId(movieId);
-        showtime.setPrice(price);
-//        showtime.setAvailableTickets(availableTickets);
-        showtime.setTheatreId(theatreId);
-        showtime.setStartTime(startTimeParser());
-        return showtime;
+        return Showtime.builder()
+                .movieId(movieId)
+                .price(price)
+                .availableTickets(availableTickets)
+                .theatreId(theatreId)
+                .startTime(startTimeParser())
+                .build();
     }
 
     private Date startTimeParser() {

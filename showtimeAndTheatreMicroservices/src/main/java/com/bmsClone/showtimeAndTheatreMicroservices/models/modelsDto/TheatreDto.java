@@ -9,13 +9,14 @@ public class TheatreDto {
     private String address;
     private int capacity;
 
-    public TheatreDto(){}
-
-    public Theatre toTheatre(){
-        Theatre theatre=new Theatre();
-        theatre.setAddress(address);
-        theatre.setName(name);
-        theatre.setCapacity(capacity);
-        return theatre;
+    public TheatreDto() {
+    }
+    
+    public Theatre toTheatre() {
+        return Theatre.builder()
+                .address(address)
+                .name(name)
+                .capacity(capacity)
+                .build();
     }
 }

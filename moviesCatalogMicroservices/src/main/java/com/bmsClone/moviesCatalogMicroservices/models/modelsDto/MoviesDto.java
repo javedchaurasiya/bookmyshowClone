@@ -18,13 +18,12 @@ public class MoviesDto {
     }
 
     public Movie toMovie() {
-        Movie movie = new Movie();
-        movie.setTitle(title);
-        movie.setCastCrew(castCrew);
-        movie.setLengthInMinutes(lengthInMinutes);
-        //will add validation later
-        movie.setReleaseDate(dateParser());
-        return movie;
+        return Movie.builder()
+                .title(title)
+                .castCrew(castCrew)
+                .lengthInMinutes(lengthInMinutes)
+                .releaseDate(dateParser())
+                .build();
     }
 
     private Date dateParser() {

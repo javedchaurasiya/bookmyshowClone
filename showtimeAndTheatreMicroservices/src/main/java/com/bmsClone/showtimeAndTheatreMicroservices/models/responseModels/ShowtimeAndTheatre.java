@@ -2,13 +2,14 @@ package com.bmsClone.showtimeAndTheatreMicroservices.models.responseModels;
 
 import com.bmsClone.showtimeAndTheatreMicroservices.models.Showtime;
 import com.bmsClone.showtimeAndTheatreMicroservices.models.Theatre;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
 @Data
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ShowtimeAndTheatre {
     private String id;
     private Movie movie;

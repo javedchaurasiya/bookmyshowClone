@@ -9,4 +9,13 @@ public class UserDto {
     private String email;
     private String phone;
     private String password;
+
+    public User toUser() {
+        return User.builder()
+                .name(name)
+                .email(email)
+                .password(password)
+                .phone(phone)
+                .build();
+    }
 }
