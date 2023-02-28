@@ -2,7 +2,7 @@ package com.bmsClone.ReservationMicroservice.controllers;
 
 import com.bmsClone.ReservationMicroservice.constants.errors;
 import com.bmsClone.ReservationMicroservice.models.modelsDto.ReservationDto;
-import com.bmsClone.ReservationMicroservice.models.responseModels.Response;
+import com.bmsClone.ReservationMicroservice.models.modelsDto.ResponseDto;
 import com.bmsClone.ReservationMicroservice.services.ReservationService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +19,9 @@ public class ReservationController {
     public ResponseEntity<?> addReservation(@RequestBody ReservationDto reservationDto) {
         try {
             reservationService.addReservation(reservationDto);
-            return ResponseEntity.ok(new Response(true, "Reservation Added Successfully"));
+            return ResponseEntity.ok(new ResponseDto(true, "Reservation Added Successfully"));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new Response(false, errors.INTERNAL_SERVER_ERROR));
+            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
         }
     }
 
@@ -30,7 +30,7 @@ public class ReservationController {
         try {
             return ResponseEntity.ok(reservationService.getUpcomingReservationByUser(id));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new Response(false, errors.INTERNAL_SERVER_ERROR));
+            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
         }
     }
 }

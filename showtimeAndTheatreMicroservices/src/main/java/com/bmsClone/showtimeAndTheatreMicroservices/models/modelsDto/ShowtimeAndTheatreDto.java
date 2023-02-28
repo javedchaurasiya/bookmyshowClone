@@ -1,6 +1,5 @@
-package com.bmsClone.showtimeAndTheatreMicroservices.models.responseModels;
+package com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto;
 
-import com.bmsClone.showtimeAndTheatreMicroservices.models.Showtime;
 import com.bmsClone.showtimeAndTheatreMicroservices.models.Theatre;
 import lombok.*;
 
@@ -10,9 +9,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ShowtimeAndTheatre {
+public class ShowtimeAndTheatreDto {
     private String id;
-    private Movie movie;
+    private MovieDto movie;
     private Theatre theatre;
     private Date startTime;
     private int availableTickets;

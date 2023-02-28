@@ -2,7 +2,8 @@ package com.bmsClone.showtimeAndTheatreMicroservices.controllers;
 
 import com.bmsClone.showtimeAndTheatreMicroservices.constants.errors;
 import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.ShowtimeDto;
-import com.bmsClone.showtimeAndTheatreMicroservices.models.responseModels.Response;
+import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.ResponseDto;
+import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.UpdateShowTicketsDto;
 import com.bmsClone.showtimeAndTheatreMicroservices.services.ShowtimeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,9 @@ public class ShowtimeController {
     public ResponseEntity<?> addShow(@RequestBody ShowtimeDto showtimeDto) {
         try {
             showtimeService.addShow(showtimeDto);
-            return ResponseEntity.ok(new Response(true, "Show Added Successfully"));
+            return ResponseEntity.ok(new ResponseDto(true, "Show Added Successfully"));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new Response(false, errors.INTERNAL_SERVER_ERROR));
+            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
         }
     }
 
@@ -28,7 +29,7 @@ public class ShowtimeController {
         try {
             return ResponseEntity.ok(showtimeService.getShowsByTheatreAndMovie(theatreId, movieId));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new Response(false, errors.INTERNAL_SERVER_ERROR));
+            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
         }
     }
 
@@ -37,7 +38,19 @@ public class ShowtimeController {
         try {
             return ResponseEntity.ok(showtimeService.getShowById(id));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new Response(false, errors.INTERNAL_SERVER_ERROR));
+            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    //can i call some endpoints internally b/w my microservices?
+    //can also use this endpoint for cancelling reservations.
+    @PutMapping("/updateAvailableTickets")
+    public ResponseEntity<?> updateAvailableTickets(@RequestBody UpdateShowTicketsDto updateShowTicketsDto) {
+        try {
+            showtimeService.updateAvailableTickets(updateShowTicketsDto);
+            return ResponseEntity.ok(new ResponseDto(true, "Successfully Updated Available Tickets"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
         }
     }
 }

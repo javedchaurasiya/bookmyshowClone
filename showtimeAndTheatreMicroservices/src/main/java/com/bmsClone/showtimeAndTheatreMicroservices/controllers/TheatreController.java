@@ -3,7 +3,7 @@ package com.bmsClone.showtimeAndTheatreMicroservices.controllers;
 import com.bmsClone.showtimeAndTheatreMicroservices.constants.errors;
 import com.bmsClone.showtimeAndTheatreMicroservices.error.CustomError;
 import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.TheatreDto;
-import com.bmsClone.showtimeAndTheatreMicroservices.models.responseModels.Response;
+import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.ResponseDto;
 import com.bmsClone.showtimeAndTheatreMicroservices.services.TheatreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +19,9 @@ public class TheatreController {
     public ResponseEntity<?> addTheatre(@RequestBody TheatreDto theatreDto) {
         try {
             theatreService.addTheatre(theatreDto);
-            return ResponseEntity.ok(new Response(true, "Theatre added Successfully"));
+            return ResponseEntity.ok(new ResponseDto(true, "Theatre added Successfully"));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new Response(false, errors.INTERNAL_SERVER_ERROR));
+            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
         }
     }
 
@@ -31,8 +31,8 @@ public class TheatreController {
             return ResponseEntity.ok(theatreService.getTheatreDetails(id));
         } catch (Exception e) {
             if (e instanceof CustomError)
-                return ResponseEntity.status(((CustomError) e).getStatus()).body(new Response(false, e.getMessage()));
-            return ResponseEntity.internalServerError().body(new Response(false, errors.INTERNAL_SERVER_ERROR));
+                return ResponseEntity.status(((CustomError) e).getStatus()).body(new ResponseDto(false, e.getMessage()));
+            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
         }
     }
 
@@ -41,7 +41,7 @@ public class TheatreController {
         try {
             return ResponseEntity.ok(theatreService.getTheatresByMovie(id));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new Response(false, errors.INTERNAL_SERVER_ERROR));
+            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
         }
     }
 

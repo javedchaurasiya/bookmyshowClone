@@ -1,13 +1,12 @@
-package com.bmsClone.ReservationMicroservice.models.responseModels;
+package com.bmsClone.ReservationMicroservice.models.modelsDto;
 
-import com.bmsClone.ReservationMicroservice.models.modelsDto.ShowtimeDto;
 import lombok.*;
 
 @Data
 @RequiredArgsConstructor
 @Builder
 @AllArgsConstructor
-public class ReservationResponse {
+public class ReservationResponseDto {
     private String id;
     private ShowtimeDto showtime;
     private String userId;

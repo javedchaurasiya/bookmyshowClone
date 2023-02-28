@@ -3,9 +3,8 @@ package com.bmsClone.userMicroservices.controllers;
 import com.bmsClone.userMicroservices.constants.errors;
 import com.bmsClone.userMicroservices.error.CustomError;
 import com.bmsClone.userMicroservices.models.dtoModels.UserDto;
-import com.bmsClone.userMicroservices.models.responseModels.Response;
+import com.bmsClone.userMicroservices.models.dtoModels.ResponseDto;
 import com.bmsClone.userMicroservices.services.UserService;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +18,9 @@ public class UserController {
     public ResponseEntity<?> signup(@RequestBody UserDto userDto) {
         try {
             userService.signup(userDto);
-            return ResponseEntity.ok(new Response(true, "Signup Successful"));
+            return ResponseEntity.ok(new ResponseDto(true, "Signup Successful"));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new Response(false, errors.INTERNAL_SERVER_ERROR));
+            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
         }
     }
 
@@ -31,8 +30,8 @@ public class UserController {
             return ResponseEntity.ok(userService.getUser(id));
         } catch (Exception e) {
             if (e instanceof CustomError)
-                return ResponseEntity.status(((CustomError) e).getStatus()).body(new Response(false, e.getMessage()));
-            return ResponseEntity.internalServerError().body(new Response(false, errors.INTERNAL_SERVER_ERROR));
+                return ResponseEntity.status(((CustomError) e).getStatus()).body(new ResponseDto(false, e.getMessage()));
+            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
         }
     }
 }

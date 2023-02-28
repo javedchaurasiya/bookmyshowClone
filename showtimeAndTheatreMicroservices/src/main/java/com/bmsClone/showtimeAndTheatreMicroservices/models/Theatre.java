@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-@Document
+@Document("theatres")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

@@ -1,4 +1,4 @@
-package com.bmsClone.showtimeAndTheatreMicroservices.models.responseModels;
+package com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Data
 @RequiredArgsConstructor
-public class Movie {
+public class MovieDto {
     private String id;
     private String title;
     private int lengthInMinutes;

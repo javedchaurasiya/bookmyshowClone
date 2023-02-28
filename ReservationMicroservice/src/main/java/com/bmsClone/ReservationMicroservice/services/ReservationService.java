@@ -3,7 +3,8 @@ package com.bmsClone.ReservationMicroservice.services;
 import com.bmsClone.ReservationMicroservice.models.Reservation;
 import com.bmsClone.ReservationMicroservice.models.modelsDto.ReservationDto;
 import com.bmsClone.ReservationMicroservice.models.modelsDto.ShowtimeDto;
-import com.bmsClone.ReservationMicroservice.models.responseModels.ReservationResponse;
+import com.bmsClone.ReservationMicroservice.models.modelsDto.ReservationResponseDto;
+import com.bmsClone.ReservationMicroservice.models.modelsDto.UpdateShowTicketsDto;
 import com.bmsClone.ReservationMicroservice.repository.ReservationRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +22,11 @@ import java.util.List;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final RestTemplate restTemplate;
-    String showtimeAndTheatreServiceUrl = "http://localhost:8083";
+    private final String showtimeAndTheatreServiceUrl = "http://localhost:8083";
 
     public void addReservation(ReservationDto reservationDto) throws Exception {
         try {
+            restTemplate.put(showtimeAndTheatreServiceUrl + "/updateAvailableTickets", new UpdateShowTicketsDto(reservationDto.getShowtimeId(), -reservationDto.getNoOfTickets()));
             reservationRepository.save(reservationDto.toReservation());
             //to make it more efficient, can also add a ref. of reservation to the particular user.
         } catch (Exception e) {
@@ -33,11 +35,11 @@ public class ReservationService {
         }
     }
 
-    public List<ReservationResponse> getUpcomingReservationByUser(String id) throws Exception {
+    public List<ReservationResponseDto> getUpcomingReservationByUser(String id) throws Exception {
         try {
             List<Reservation> reservations = reservationRepository.findReservationByUserId(id);
 
-            List<ReservationResponse> reservationResponses = new ArrayList<>();
+            List<ReservationResponseDto> reservationResponses = new ArrayList<>();
 
             reservations.forEach(reservation -> {
                 try {
@@ -45,7 +47,7 @@ public class ReservationService {
                     ShowtimeDto showtime = showtimeDtoResponseEntity.getBody();
                     System.out.println(showtime);
                     if (new Date().before(showtime.getStartTime())) {
-                        ReservationResponse reservationResponse = ReservationResponse.builder()
+                        ReservationResponseDto reservationResponse = ReservationResponseDto.builder()
                                 .id(reservation.getId())
                                 .showtime(showtime)
                                 .userId(reservation.getUserId())

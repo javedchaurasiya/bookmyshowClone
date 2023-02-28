@@ -5,8 +5,9 @@ import com.bmsClone.showtimeAndTheatreMicroservices.error.CustomError;
 import com.bmsClone.showtimeAndTheatreMicroservices.models.Showtime;
 import com.bmsClone.showtimeAndTheatreMicroservices.models.Theatre;
 import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.ShowtimeDto;
-import com.bmsClone.showtimeAndTheatreMicroservices.models.responseModels.Movie;
-import com.bmsClone.showtimeAndTheatreMicroservices.models.responseModels.ShowtimeAndTheatre;
+import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.MovieDto;
+import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.ShowtimeAndTheatreDto;
+import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.UpdateShowTicketsDto;
 import com.bmsClone.showtimeAndTheatreMicroservices.repository.showtimeRepository.ShowtimeRepository;
 import com.bmsClone.showtimeAndTheatreMicroservices.repository.theatreRepository.TheatreRepository;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,7 @@ public class ShowtimeService {
         }
     }
 
-    public ShowtimeAndTheatre getShowById(String id) throws Exception {
+    public ShowtimeAndTheatreDto getShowById(String id) throws Exception {
         try {
             Optional<Showtime> optionalShowtime = showtimeRepository.findById(id);
             if (optionalShowtime.isEmpty()) throw new CustomError(404, errors.SHOWTIME_NOT_FOUND);
@@ -55,10 +56,10 @@ public class ShowtimeService {
             Showtime showtime = optionalShowtime.get();
             Theatre theatre = theatreRepository.findById(showtime.getTheatreId()).get();
 
-            ResponseEntity<Movie> movieResponseEntity = restTemplate.getForEntity(movieServiceUrl + "/getMovieDetails/" + showtime.getMovieId(), Movie.class);
-            Movie movie = movieResponseEntity.getBody();
+            ResponseEntity<MovieDto> movieResponseEntity = restTemplate.getForEntity(movieServiceUrl + "/getMovieDetails/" + showtime.getMovieId(), MovieDto.class);
+            MovieDto movie = movieResponseEntity.getBody();
 
-            return ShowtimeAndTheatre.builder()
+            return ShowtimeAndTheatreDto.builder()
                     .id(showtime.getId())
                     .theatre(theatre)
                     .movie(movie)
@@ -70,5 +71,18 @@ public class ShowtimeService {
         }
     }
 
+    public void updateAvailableTickets(UpdateShowTicketsDto updateShowTicketsDto) throws Exception {
+        try {
+            //Assuming show is always there
+            Showtime showtime = showtimeRepository.findById(updateShowTicketsDto.getId()).get();
+            if (showtime.getAvailableTickets() + updateShowTicketsDto.getDifference() < 0)
+                throw new CustomError(400, "Invalid Args.");
+            showtime.setAvailableTickets(showtime.getAvailableTickets() + updateShowTicketsDto.getDifference());
+            showtimeRepository.save(showtime);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
 
 }
