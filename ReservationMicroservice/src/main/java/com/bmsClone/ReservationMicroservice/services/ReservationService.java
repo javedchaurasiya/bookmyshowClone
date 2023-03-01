@@ -1,5 +1,6 @@
 package com.bmsClone.ReservationMicroservice.services;
 
+import com.bmsClone.ReservationMicroservice.error.CustomError;
 import com.bmsClone.ReservationMicroservice.models.Reservation;
 import com.bmsClone.ReservationMicroservice.models.modelsDto.ReservationDto;
 import com.bmsClone.ReservationMicroservice.models.modelsDto.ShowtimeDto;
@@ -37,12 +38,13 @@ public class ReservationService {
 
     public List<ReservationResponseDto> getUpcomingReservationByUser(String id) throws Exception {
         try {
-            List<Reservation> reservations = reservationRepository.findReservationByUserId(id);
+            List<Reservation> reservations = reservationRepository.findReservationByUserIdAndCancelled(id, false);
 
             List<ReservationResponseDto> reservationResponses = new ArrayList<>();
 
             reservations.forEach(reservation -> {
                 try {
+                    //can use feign client to solve this problem of re-declaring dtos in every microservice.
                     ResponseEntity<ShowtimeDto> showtimeDtoResponseEntity = restTemplate.getForEntity(showtimeAndTheatreServiceUrl + "/getShowById/" + reservation.getShowtimeId(), ShowtimeDto.class);
                     ShowtimeDto showtime = showtimeDtoResponseEntity.getBody();
                     System.out.println(showtime);
@@ -60,6 +62,22 @@ public class ReservationService {
                 }
             });
             return reservationResponses;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
+
+    public void cancelReservation(String id) throws Exception {
+        try {
+            //assuming user input is valid and reservation always exists.
+            Reservation reservation = reservationRepository.findById(id).get();
+            if (reservation.getCancelled()) throw new CustomError(400, "Reservation is already cancelled");
+
+            reservation.setCancelled(true);
+            restTemplate.put(showtimeAndTheatreServiceUrl + "/updateAvailableTickets", new UpdateShowTicketsDto(reservation.getShowtimeId(), reservation.getNoOfTickets()));
+
+            reservationRepository.save(reservation);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw e;

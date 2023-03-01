@@ -2,6 +2,7 @@ package com.bmsClone.ReservationMicroservice.models;
 
 import com.mongodb.lang.NonNull;
 import lombok.*;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
@@ -19,4 +20,7 @@ public class Reservation {
     private String userId;
     @NonNull
     private int noOfTickets;
+    @NonNull
+    @Builder.Default
+    private Boolean cancelled = false;
 }

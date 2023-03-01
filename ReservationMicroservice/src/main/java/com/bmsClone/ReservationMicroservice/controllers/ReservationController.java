@@ -1,6 +1,7 @@
 package com.bmsClone.ReservationMicroservice.controllers;
 
 import com.bmsClone.ReservationMicroservice.constants.errors;
+import com.bmsClone.ReservationMicroservice.error.CustomError;
 import com.bmsClone.ReservationMicroservice.models.modelsDto.ReservationDto;
 import com.bmsClone.ReservationMicroservice.models.modelsDto.ResponseDto;
 import com.bmsClone.ReservationMicroservice.services.ReservationService;
@@ -30,6 +31,18 @@ public class ReservationController {
         try {
             return ResponseEntity.ok(reservationService.getUpcomingReservationByUser(id));
         } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    @PutMapping("/cancelReservation/{id}")
+    public ResponseEntity<?> cancelReservation(@PathVariable String id) {
+        try {
+            reservationService.cancelReservation(id);
+            return ResponseEntity.ok(new ResponseDto(true, "Successfully Cancelled Reservation"));
+        } catch (Exception e) {
+            if (e instanceof CustomError)
+                return ResponseEntity.status(((CustomError) e).getStatus()).body(new ResponseDto(false, e.getMessage()));
             return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
         }
     }

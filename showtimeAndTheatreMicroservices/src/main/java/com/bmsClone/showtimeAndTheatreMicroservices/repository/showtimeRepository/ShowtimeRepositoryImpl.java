@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @Data
@@ -23,8 +24,6 @@ public class ShowtimeRepositoryImpl implements ShowtimeRepositoryCustom {
         query.addCriteria(Criteria.where("startTime").gte(new Date()));
         query.fields().include("theatreId");
         List<Showtime> shows = mongoTemplate.find(query, Showtime.class);
-        List<String> theatreIds = new ArrayList<>();
-        shows.forEach(show -> theatreIds.add(show.getTheatreId()));
-        return theatreIds;
+        return shows.stream().map(Showtime::getTheatreId).collect(Collectors.toList());
     }
 }
