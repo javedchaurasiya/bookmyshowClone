@@ -23,7 +23,7 @@ import java.util.List;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final RestTemplate restTemplate;
-    private final String showtimeAndTheatreServiceUrl = "http://localhost:8083";
+    private final String showtimeAndTheatreServiceUrl = "http://showtime-and-theatre-service";
 
     public void addReservation(ReservationDto reservationDto) throws Exception {
         try {
