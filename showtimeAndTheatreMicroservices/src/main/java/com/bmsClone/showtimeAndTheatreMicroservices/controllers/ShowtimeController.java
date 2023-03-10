@@ -6,6 +6,7 @@ import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.ResponseDto
 import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.UpdateShowTicketsDto;
 import com.bmsClone.showtimeAndTheatreMicroservices.services.ShowtimeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ShowtimeController {
     private final ShowtimeService showtimeService;
+    private final Environment env;
+
+    @GetMapping("/health")
+    public String getHealth() {
+        return "Port : " + env.getProperty("local.server.port");
+    }
 
     @PostMapping("/addShow")
     public ResponseEntity<?> addShow(@RequestBody ShowtimeDto showtimeDto) {

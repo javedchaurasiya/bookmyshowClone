@@ -6,6 +6,7 @@ import com.bmsClone.userMicroservices.models.dtoModels.UserDto;
 import com.bmsClone.userMicroservices.models.dtoModels.ResponseDto;
 import com.bmsClone.userMicroservices.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final Environment env;
+
+    @GetMapping("/health")
+    public String getHealth() {
+        return "Port : " + env.getProperty("local.server.port");
+    }
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody UserDto userDto) {

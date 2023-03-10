@@ -6,6 +6,7 @@ import com.bmsClone.moviesCatalogMicroservices.models.modelsDto.MoviesDto;
 import com.bmsClone.moviesCatalogMicroservices.models.modelsDto.ResponseDto;
 import com.bmsClone.moviesCatalogMicroservices.services.MovieService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class MovieController {
     private final MovieService movieService;
+    private final Environment env;
+
+    @GetMapping("/health")
+    public String getHealth() {
+        return "Port : " + env.getProperty("local.server.port");
+    }
 
     @PostMapping("/addMovie")
     public ResponseEntity<?> addMovie(@RequestBody MoviesDto moviesDto) throws Exception {

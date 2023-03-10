@@ -7,14 +7,22 @@ import com.bmsClone.ReservationMicroservice.models.modelsDto.ResponseDto;
 import com.bmsClone.ReservationMicroservice.services.ReservationService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Data
 @RequiredArgsConstructor
+//@RequestMapping("/reservation")
 public class ReservationController {
     private final ReservationService reservationService;
+    private final Environment env;
+
+    @GetMapping("/health")
+    public String getHealth() {
+        return "Port : " + env.getProperty("local.server.port");
+    }
 
     @PostMapping("/addReservation")
     public ResponseEntity<?> addReservation(@RequestBody ReservationDto reservationDto) {
