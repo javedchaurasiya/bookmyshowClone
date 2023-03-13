@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/movie")
 public class MovieController {
     private final MovieService movieService;
     private final Environment env;

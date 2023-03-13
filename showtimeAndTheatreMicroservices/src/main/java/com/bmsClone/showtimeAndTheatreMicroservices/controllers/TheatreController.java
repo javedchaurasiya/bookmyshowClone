@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/showtime-and-theatre")
 public class TheatreController {
     private final TheatreService theatreService;
 

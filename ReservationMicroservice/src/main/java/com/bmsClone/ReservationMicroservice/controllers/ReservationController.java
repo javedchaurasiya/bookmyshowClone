@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Data
 @RequiredArgsConstructor
-//@RequestMapping("/reservation")
+@RequestMapping("/reservation")
 public class ReservationController {
     private final ReservationService reservationService;
     private final Environment env;

@@ -4,7 +4,7 @@ server:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
   instance:
     hostname: localhost
 
@@ -21,22 +21,22 @@ spring:
           predicates:
             - Path=/reservation/**
           filters:
-            - RewritePath=/reservation/(?<segment>.*),/$\{segment}
+        #            - RewritePath=/reservation/(?<segment>.*),/$\{segment}
         - id: showtime-and-theatre-service
           uri: lb://SHOWTIME-AND-THEATRE-SERVICE
           predicates:
             - Path=/showtime-and-theatre/**
           filters:
-            - RewritePath=/showtime-and-theatre/(?<segment>.*),/$\{segment}
+        #            - RewritePath=/showtime-and-theatre/(?<segment>.*),/$\{segment}
         - id: movie-service
           uri: lb://MOVIE-SERVICE
           predicates:
             - Path=/movie/**
           filters:
-            - RewritePath=/movie/(?<segment>.*),/$\{segment}
+        #            - RewritePath=/movie/(?<segment>.*),/$\{segment}
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
             - Path=/user/**
           filters:
-            - RewritePath=/user/(?<segment>.*),/$\{segment}
+#            - RewritePath=/user/(?<segment>.*),/$\{segment}

@@ -24,7 +24,7 @@ public class ShowtimeService {
     private final ShowtimeRepository showtimeRepository;
     private final TheatreRepository theatreRepository;
     private final RestTemplate restTemplate;
-    String movieServiceUrl = "http://movie-service";
+    String movieServiceUrl = "http://movie-service/movie";
 
     public void addShow(ShowtimeDto showtimeDto) throws Exception {
         try {
