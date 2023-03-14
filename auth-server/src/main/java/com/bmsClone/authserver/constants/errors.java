@@ -1,4 +1,4 @@
-package com.bmsClone.userMicroservices.constants;
+package com.bmsClone.authserver.constants;
 
 public class errors {
     public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";

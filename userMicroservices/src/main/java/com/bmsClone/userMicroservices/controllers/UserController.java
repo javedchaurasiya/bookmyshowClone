@@ -32,6 +32,16 @@ public class UserController {
         }
     }
 
+    @GetMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UserDto userDto) {
+        try {
+            userService.login(userDto);
+            return ResponseEntity.ok(new ResponseDto(true, "Logged In Successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
+        }
+    }
+
     @GetMapping("/getUserDetails/{id}")
     public ResponseEntity<?> getUser(@PathVariable String id) {
         try {

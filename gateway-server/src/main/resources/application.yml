@@ -39,4 +39,12 @@ spring:
           predicates:
             - Path=/user/**
           filters:
-#            - RewritePath=/user/(?<segment>.*),/$\{segment}
+        #            - RewritePath=/user/(?<segment>.*),/$\{segment}
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth/**
+
+
+jwt:
+  secret: thisIsASecret

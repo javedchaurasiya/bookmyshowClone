@@ -11,6 +11,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @Data
 @RequiredArgsConstructor
@@ -20,7 +22,8 @@ public class ReservationController {
     private final Environment env;
 
     @GetMapping("/health")
-    public String getHealth() {
+    public String getHealth(@RequestHeader Map<String, String> headers) {
+        System.out.println(headers.get("id"));
         return "Port : " + env.getProperty("local.server.port");
     }
 
