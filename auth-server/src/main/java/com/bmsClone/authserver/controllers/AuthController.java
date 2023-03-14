@@ -1,6 +1,7 @@
 package com.bmsClone.authserver.controllers;
 
 import com.bmsClone.authserver.constants.errors;
+import com.bmsClone.authserver.models.dtoModels.JwtDto;
 import com.bmsClone.authserver.models.dtoModels.ResponseDto;
 import com.bmsClone.authserver.models.dtoModels.UserDto;
 import com.bmsClone.authserver.services.AuthService;
@@ -17,21 +18,13 @@ public class AuthController {
     private final AuthService authService;
 
     @GetMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDto userDto) {
-        try {
-            return ResponseEntity.ok(authService.login(userDto));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
-        }
+    public ResponseEntity<JwtDto> login(@RequestBody UserDto userDto) {
+        return ResponseEntity.ok(authService.login(userDto));
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody UserDto userDto) {
-        try {
-            authService.signup(userDto);
-            return ResponseEntity.ok(new ResponseDto(true, "Signup Successful"));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
-        }
+    public ResponseEntity<ResponseDto> signup(@RequestBody UserDto userDto) {
+        authService.signup(userDto);
+        return ResponseEntity.ok(new ResponseDto(true, "Signup Successful"));
     }
 }

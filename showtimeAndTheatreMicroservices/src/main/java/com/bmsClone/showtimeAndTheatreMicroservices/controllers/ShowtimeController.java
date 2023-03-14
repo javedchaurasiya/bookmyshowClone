@@ -1,6 +1,8 @@
 package com.bmsClone.showtimeAndTheatreMicroservices.controllers;
 
 import com.bmsClone.showtimeAndTheatreMicroservices.constants.errors;
+import com.bmsClone.showtimeAndTheatreMicroservices.models.Showtime;
+import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.ShowtimeAndTheatreDto;
 import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.ShowtimeDto;
 import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.ResponseDto;
 import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.UpdateShowTicketsDto;
@@ -9,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,42 +27,26 @@ public class ShowtimeController {
     }
 
     @PostMapping("/addShow")
-    public ResponseEntity<?> addShow(@RequestBody ShowtimeDto showtimeDto) {
-        try {
-            showtimeService.addShow(showtimeDto);
-            return ResponseEntity.ok(new ResponseDto(true, "Show Added Successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
-        }
+    public ResponseEntity<ResponseDto> addShow(@RequestBody ShowtimeDto showtimeDto) {
+        showtimeService.addShow(showtimeDto);
+        return ResponseEntity.ok(new ResponseDto(true, "Show Added Successfully"));
     }
 
     @GetMapping("/getShowsByTheatreAndMovie")
-    public ResponseEntity<?> getShowsByTheatreAndMovie(@RequestParam(value = "theatre") String theatreId, @RequestParam(value = "movie") String movieId) {
-        try {
-            return ResponseEntity.ok(showtimeService.getShowsByTheatreAndMovie(theatreId, movieId));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
-        }
+    public ResponseEntity<List<Showtime>> getShowsByTheatreAndMovie(@RequestParam(value = "theatre") String theatreId, @RequestParam(value = "movie") String movieId) {
+        return ResponseEntity.ok(showtimeService.getShowsByTheatreAndMovie(theatreId, movieId));
     }
 
     @GetMapping("/getShowById/{id}")
-    public ResponseEntity<?> getShowById(@PathVariable String id) {
-        try {
-            return ResponseEntity.ok(showtimeService.getShowById(id));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
-        }
+    public ResponseEntity<ShowtimeAndTheatreDto> getShowById(@PathVariable String id) {
+        return ResponseEntity.ok(showtimeService.getShowById(id));
     }
 
-    //can i call some endpoints internally b/w my microservices?
+    //can I call some endpoints internally b/w my microservices? => not a problem while we use a gateway.
     //can also use this endpoint for cancelling reservations.
     @PutMapping("/updateAvailableTickets")
-    public ResponseEntity<?> updateAvailableTickets(@RequestBody UpdateShowTicketsDto updateShowTicketsDto) {
-        try {
-            showtimeService.updateAvailableTickets(updateShowTicketsDto);
-            return ResponseEntity.ok(new ResponseDto(true, "Successfully Updated Available Tickets"));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ResponseDto(false, errors.INTERNAL_SERVER_ERROR));
-        }
+    public ResponseEntity<ResponseDto> updateAvailableTickets(@RequestBody UpdateShowTicketsDto updateShowTicketsDto) {
+        showtimeService.updateAvailableTickets(updateShowTicketsDto);
+        return ResponseEntity.ok(new ResponseDto(true, "Successfully Updated Available Tickets"));
     }
 }

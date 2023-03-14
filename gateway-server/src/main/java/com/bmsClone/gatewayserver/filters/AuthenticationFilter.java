@@ -15,6 +15,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 @Component
 @Data
 @RequiredArgsConstructor
@@ -65,9 +68,15 @@ public class AuthenticationFilter implements GlobalFilter {
 
     private void populateRequestWithHeaders(ServerWebExchange exchange, String token) {
         Claims claims = jwtUtil.getClaims(token);
-        System.out.println(claims.getSubject());
+        System.out.println("Logging before Populating headers");
+        //How to fix this warning ???
+        Map jwtPayload = claims.get("user", Map.class);
+        System.out.println(claims.get("user"));
+        System.out.println(jwtPayload.get("id"));
+        System.out.println(jwtPayload.get("admin").getClass());
         exchange.getRequest().mutate()
                 .header("id", String.valueOf(claims.getSubject()))
+                .header("admin", String.valueOf((Boolean) jwtPayload.get("admin")))
                 .build();
 
         System.out.println(exchange.getRequest().getHeaders().get("id"));

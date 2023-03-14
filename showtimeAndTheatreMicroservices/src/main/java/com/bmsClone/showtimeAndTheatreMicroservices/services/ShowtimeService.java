@@ -11,9 +11,11 @@ import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.UpdateShowT
 import com.bmsClone.showtimeAndTheatreMicroservices.repository.showtimeRepository.ShowtimeRepository;
 import com.bmsClone.showtimeAndTheatreMicroservices.repository.theatreRepository.TheatreRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +28,7 @@ public class ShowtimeService {
     private final RestTemplate restTemplate;
     String movieServiceUrl = "http://movie-service/movie";
 
-    public void addShow(ShowtimeDto showtimeDto) throws Exception {
+    public void addShow(ShowtimeDto showtimeDto) {
         try {
             Showtime showtime = showtimeDto.toShowtime();
             //forcing the optional theatre, not doing server side input validation for now.
@@ -34,24 +36,25 @@ public class ShowtimeService {
             showtimeRepository.save(showtime);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw e;
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errors.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public List<Showtime> getShowsByTheatreAndMovie(String theatreId, String movieId) throws Exception {
+    public List<Showtime> getShowsByTheatreAndMovie(String theatreId, String movieId) {
         try {
             // can also groupBy the data according to show date.
             return showtimeRepository.findShowtimeByTheatreIdAndMovieId(theatreId, movieId);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw e;
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errors.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public ShowtimeAndTheatreDto getShowById(String id) throws Exception {
+    public ShowtimeAndTheatreDto getShowById(String id) {
         try {
             Optional<Showtime> optionalShowtime = showtimeRepository.findById(id);
-            if (optionalShowtime.isEmpty()) throw new CustomError(404, errors.SHOWTIME_NOT_FOUND);
+            if (optionalShowtime.isEmpty())
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, errors.SHOWTIME_NOT_FOUND);
 
             Showtime showtime = optionalShowtime.get();
             Theatre theatre = theatreRepository.findById(showtime.getTheatreId()).get();
@@ -65,23 +68,27 @@ public class ShowtimeService {
                     .movie(movie)
                     .startTime(showtime.getStartTime())
                     .build();
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw e;
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errors.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public void updateAvailableTickets(UpdateShowTicketsDto updateShowTicketsDto) throws Exception {
+    public void updateAvailableTickets(UpdateShowTicketsDto updateShowTicketsDto) {
         try {
             //Assuming show is always there
             Showtime showtime = showtimeRepository.findById(updateShowTicketsDto.getId()).get();
             if (showtime.getAvailableTickets() + updateShowTicketsDto.getDifference() < 0)
-                throw new CustomError(400, "Invalid Args.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Args");
             showtime.setAvailableTickets(showtime.getAvailableTickets() + updateShowTicketsDto.getDifference());
             showtimeRepository.save(showtime);
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw e;
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errors.INTERNAL_SERVER_ERROR);
         }
     }
 

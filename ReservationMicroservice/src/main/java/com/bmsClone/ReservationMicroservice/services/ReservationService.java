@@ -1,5 +1,6 @@
 package com.bmsClone.ReservationMicroservice.services;
 
+import com.bmsClone.ReservationMicroservice.constants.errors;
 import com.bmsClone.ReservationMicroservice.error.CustomError;
 import com.bmsClone.ReservationMicroservice.models.Reservation;
 import com.bmsClone.ReservationMicroservice.models.modelsDto.ReservationDto;
@@ -9,13 +10,16 @@ import com.bmsClone.ReservationMicroservice.models.modelsDto.UpdateShowTicketsDt
 import com.bmsClone.ReservationMicroservice.repository.ReservationRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Data
@@ -25,18 +29,19 @@ public class ReservationService {
     private final RestTemplate restTemplate;
     private final String showtimeAndTheatreServiceUrl = "http://showtime-and-theatre-service/showtime-and-theatre";
 
-    public void addReservation(ReservationDto reservationDto) throws Exception {
+    public void addReservation(ReservationDto reservationDto, String userId) {
         try {
+            reservationDto.setUserId(userId);
             restTemplate.put(showtimeAndTheatreServiceUrl + "/updateAvailableTickets", new UpdateShowTicketsDto(reservationDto.getShowtimeId(), -reservationDto.getNoOfTickets()));
             reservationRepository.save(reservationDto.toReservation());
             //to make it more efficient, can also add a ref. of reservation to the particular user.
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw e;
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public List<ReservationResponseDto> getUpcomingReservationByUser(String id) throws Exception {
+    public List<ReservationResponseDto> getUpcomingReservationByUser(String id) {
         try {
             List<Reservation> reservations = reservationRepository.findReservationByUserIdAndCancelled(id, false);
 
@@ -64,23 +69,34 @@ public class ReservationService {
             return reservationResponses;
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw e;
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
     }
 
-    public void cancelReservation(String id) throws Exception {
+    public void cancelReservation(String id, String userId) {
         try {
             //assuming user input is valid and reservation always exists.
-            Reservation reservation = reservationRepository.findById(id).get();
-            if (reservation.getCancelled()) throw new CustomError(400, "Reservation is already cancelled");
+            Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+            if (optionalReservation.isEmpty())
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, errors.RESERVATION_NOT_FOUND);
+
+            Reservation reservation = optionalReservation.get();
+
+            if (!reservation.getUserId().equals(userId)) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            
+            if (reservation.getCancelled())
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Reservation is already cancelled");
 
             reservation.setCancelled(true);
             restTemplate.put(showtimeAndTheatreServiceUrl + "/updateAvailableTickets", new UpdateShowTicketsDto(reservation.getShowtimeId(), reservation.getNoOfTickets()));
 
             reservationRepository.save(reservation);
+        } catch (ResponseStatusException e) {
+            throw e;
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw e;
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

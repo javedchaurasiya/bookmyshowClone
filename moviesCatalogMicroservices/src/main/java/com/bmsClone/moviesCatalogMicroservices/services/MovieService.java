@@ -6,7 +6,10 @@ import com.bmsClone.moviesCatalogMicroservices.models.Movie;
 import com.bmsClone.moviesCatalogMicroservices.models.modelsDto.MoviesDto;
 import com.bmsClone.moviesCatalogMicroservices.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,33 +19,36 @@ import java.util.Optional;
 public class MovieService {
     private final MovieRepository movieRepository;
 
-    public void addMovie(MoviesDto moviesDto) throws Exception {
+    public void addMovie(MoviesDto moviesDto) {
         try {
             movieRepository.save(moviesDto.toMovie());
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw e;
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errors.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public List<Movie> getUpcomingMovies() throws Exception {
+    public List<Movie> getUpcomingMovies() {
         try {
             return movieRepository.getUpcomingMovies();
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw e;
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errors.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public Movie getMovieDetails(String id) throws Exception {
+    public Movie getMovieDetails(String id) throws ResponseStatusException {
         try {
             Optional<Movie> optionalMovie = movieRepository.findById(id);
-            if (optionalMovie.isEmpty()) throw new CustomError(404, errors.MOVIE_NOT_FOUND);
-
+            if (optionalMovie.isEmpty())
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Movie Not Found");
             return optionalMovie.get();
-        } catch (Exception e) {
+        } catch (ResponseStatusException e) {
             System.out.println(e.getMessage());
             throw e;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errors.INTERNAL_SERVER_ERROR);
         }
     }
 

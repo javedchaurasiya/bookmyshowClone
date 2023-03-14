@@ -14,6 +14,7 @@ public class UserDto {
     private String email;
     private String phone;
     private String password;
+    private Boolean admin;
 
     public User toUser() {
         return User.builder()
@@ -21,6 +22,7 @@ public class UserDto {
                 .email(email)
                 .password(password)
                 .phone(phone)
+                .admin(admin)
                 .build();
     }
 }

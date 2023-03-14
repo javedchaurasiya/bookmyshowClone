@@ -29,5 +29,8 @@ public class User {
     @NonNull
     @JsonIgnore
     private String password;
+    @NonNull
+    @Builder.Default
+    private Boolean admin = false;
 
 }

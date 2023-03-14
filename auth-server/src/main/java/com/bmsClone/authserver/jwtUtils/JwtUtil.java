@@ -1,5 +1,7 @@
 package com.bmsClone.authserver.jwtUtils;
 
+import com.bmsClone.authserver.models.User;
+import com.bmsClone.authserver.models.dtoModels.JWTPayload;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -30,13 +32,17 @@ public class JwtUtil {
         return null;
     }
 
-    public String generateToken(String id) {
-        System.out.println(id);
-        Claims claims = Jwts.claims().setSubject(id);
+    public String generateToken(User user) {
+        Claims claims = Jwts.claims().setSubject(user.getId());
         long nowMillis = System.currentTimeMillis();
         long expMillis = nowMillis + tokenValidity;
         Date exp = new Date(expMillis);
-        return Jwts.builder().setClaims(claims).setIssuedAt(new Date(nowMillis)).setExpiration(exp)
+        return Jwts
+                .builder()
+                .setSubject(user.getId())
+                .claim("user", JWTPayload.builder().id(user.getId()).admin(user.getAdmin()).build())
+                .setIssuedAt(new Date(nowMillis))
+                .setExpiration(exp)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
     }
 
