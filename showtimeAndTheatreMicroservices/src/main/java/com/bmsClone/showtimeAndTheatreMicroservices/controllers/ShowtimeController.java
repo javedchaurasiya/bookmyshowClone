@@ -7,12 +7,14 @@ import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.ShowtimeDto
 import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.ResponseDto;
 import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.UpdateShowTicketsDto;
 import com.bmsClone.showtimeAndTheatreMicroservices.services.ShowtimeService;
+import com.bmsClone.showtimeAndTheatreMicroservices.utils.Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,6 +22,7 @@ import java.util.List;
 public class ShowtimeController {
     private final ShowtimeService showtimeService;
     private final Environment env;
+    private final Util util;
 
     @GetMapping("/health")
     public String getHealth() {
@@ -27,7 +30,8 @@ public class ShowtimeController {
     }
 
     @PostMapping("/addShow")
-    public ResponseEntity<ResponseDto> addShow(@RequestBody ShowtimeDto showtimeDto) {
+    public ResponseEntity<ResponseDto> addShow(@RequestBody ShowtimeDto showtimeDto, @RequestHeader Map<String, String> headers) {
+        util.throwErrorIfNotAdmin(headers);
         showtimeService.addShow(showtimeDto);
         return ResponseEntity.ok(new ResponseDto(true, "Show Added Successfully"));
     }
