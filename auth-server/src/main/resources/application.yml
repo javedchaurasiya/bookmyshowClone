@@ -1,26 +1,10 @@
-server:
-  port: 8085
-  error:
-    include-message: always
-
 spring:
   application:
     name: auth-service
-  data:
-    mongodb:
-      host: localhost
-      port: 27017
-      database: bookmyshowClone
-      auto-index-creation: true
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
-  instance:
-    hostname: localhost
-
-jwt:
-  secret: thisIsASecret
-  token:
-    validity: 10000000000
+  config:
+    import: "configserver:"
+  cloud:
+    config:
+      uri: http://localhost:8888
+      username: root
+      password: root
