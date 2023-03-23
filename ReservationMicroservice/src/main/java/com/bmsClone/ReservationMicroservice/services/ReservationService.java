@@ -2,6 +2,7 @@ package com.bmsClone.ReservationMicroservice.services;
 
 import com.bmsClone.ReservationMicroservice.constants.errors;
 import com.bmsClone.ReservationMicroservice.error.CustomError;
+import com.bmsClone.ReservationMicroservice.feignClient.ShowtimeAndTheatreServiceClient;
 import com.bmsClone.ReservationMicroservice.models.Reservation;
 import com.bmsClone.ReservationMicroservice.models.modelsDto.ReservationDto;
 import com.bmsClone.ReservationMicroservice.models.modelsDto.ShowtimeDto;
@@ -26,13 +27,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ReservationService {
     private final ReservationRepository reservationRepository;
-    private final RestTemplate restTemplate;
-    private final String showtimeAndTheatreServiceUrl = "http://showtime-and-theatre-service/showtime-and-theatre";
+    private final ShowtimeAndTheatreServiceClient showtimeAndTheatreServiceClient;
 
     public void addReservation(ReservationDto reservationDto, String userId) {
         try {
             reservationDto.setUserId(userId);
-            restTemplate.put(showtimeAndTheatreServiceUrl + "/updateAvailableTickets", new UpdateShowTicketsDto(reservationDto.getShowtimeId(), -reservationDto.getNoOfTickets()));
+            showtimeAndTheatreServiceClient.updateAvailableTickets(new UpdateShowTicketsDto(reservationDto.getShowtimeId(), -reservationDto.getNoOfTickets()));
             reservationRepository.save(reservationDto.toReservation());
             //to make it more efficient, can also add a ref. of reservation to the particular user.
         } catch (Exception e) {
@@ -49,8 +49,7 @@ public class ReservationService {
 
             reservations.forEach(reservation -> {
                 try {
-                    //can use feign client to solve this problem of re-declaring dtos in every microservice.
-                    ResponseEntity<ShowtimeDto> showtimeDtoResponseEntity = restTemplate.getForEntity(showtimeAndTheatreServiceUrl + "/getShowById/" + reservation.getShowtimeId(), ShowtimeDto.class);
+                    ResponseEntity<ShowtimeDto> showtimeDtoResponseEntity = showtimeAndTheatreServiceClient.getShowById(reservation.getShowtimeId());
                     ShowtimeDto showtime = showtimeDtoResponseEntity.getBody();
                     System.out.println(showtime);
                     if (new Date().before(showtime.getStartTime())) {
@@ -84,13 +83,12 @@ public class ReservationService {
             Reservation reservation = optionalReservation.get();
 
             if (!reservation.getUserId().equals(userId)) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-            
+
             if (reservation.getCancelled())
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Reservation is already cancelled");
 
             reservation.setCancelled(true);
-            restTemplate.put(showtimeAndTheatreServiceUrl + "/updateAvailableTickets", new UpdateShowTicketsDto(reservation.getShowtimeId(), reservation.getNoOfTickets()));
-
+            showtimeAndTheatreServiceClient.updateAvailableTickets(new UpdateShowTicketsDto(reservation.getShowtimeId(), reservation.getNoOfTickets()));
             reservationRepository.save(reservation);
         } catch (ResponseStatusException e) {
             throw e;

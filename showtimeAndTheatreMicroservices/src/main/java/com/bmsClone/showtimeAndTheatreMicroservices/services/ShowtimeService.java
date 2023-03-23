@@ -2,6 +2,7 @@ package com.bmsClone.showtimeAndTheatreMicroservices.services;
 
 import com.bmsClone.showtimeAndTheatreMicroservices.constants.errors;
 import com.bmsClone.showtimeAndTheatreMicroservices.error.CustomError;
+import com.bmsClone.showtimeAndTheatreMicroservices.feignClient.MovieServiceClient;
 import com.bmsClone.showtimeAndTheatreMicroservices.models.Showtime;
 import com.bmsClone.showtimeAndTheatreMicroservices.models.Theatre;
 import com.bmsClone.showtimeAndTheatreMicroservices.models.modelsDto.ShowtimeDto;
@@ -25,8 +26,7 @@ import java.util.Optional;
 public class ShowtimeService {
     private final ShowtimeRepository showtimeRepository;
     private final TheatreRepository theatreRepository;
-    private final RestTemplate restTemplate;
-    String movieServiceUrl = "http://movie-service/movie";
+    private final MovieServiceClient movieServiceClient;
 
     public void addShow(ShowtimeDto showtimeDto) {
         try {
@@ -59,7 +59,7 @@ public class ShowtimeService {
             Showtime showtime = optionalShowtime.get();
             Theatre theatre = theatreRepository.findById(showtime.getTheatreId()).get();
 
-            ResponseEntity<MovieDto> movieResponseEntity = restTemplate.getForEntity(movieServiceUrl + "/getMovieDetails/" + showtime.getMovieId(), MovieDto.class);
+            ResponseEntity<MovieDto> movieResponseEntity = movieServiceClient.getMovieDetails(showtime.getMovieId());
             MovieDto movie = movieResponseEntity.getBody();
 
             return ShowtimeAndTheatreDto.builder()
