@@ -9,12 +9,15 @@ import com.bmsClone.ReservationMicroservice.models.modelsDto.ShowtimeDto;
 import com.bmsClone.ReservationMicroservice.models.modelsDto.ReservationResponseDto;
 import com.bmsClone.ReservationMicroservice.models.modelsDto.UpdateShowTicketsDto;
 import com.bmsClone.ReservationMicroservice.repository.ReservationRepository;
+import feign.FeignException;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -28,13 +31,29 @@ import java.util.Optional;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ShowtimeAndTheatreServiceClient showtimeAndTheatreServiceClient;
+    private final CircuitBreakerFactory circuitBreakerFactory;
 
     public void addReservation(ReservationDto reservationDto, String userId) {
         try {
+            CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitBreaker");
+
             reservationDto.setUserId(userId);
-            showtimeAndTheatreServiceClient.updateAvailableTickets(new UpdateShowTicketsDto(reservationDto.getShowtimeId(), -reservationDto.getNoOfTickets()));
+
+            //circuit breaker logic.
+            circuitBreaker.run(() -> {
+                showtimeAndTheatreServiceClient.updateAvailableTickets(new UpdateShowTicketsDto(reservationDto.getShowtimeId(), -reservationDto.getNoOfTickets()));
+                return null;
+            }, throwable -> {
+                if (throwable instanceof FeignException && ((FeignException) throwable).status() == 400)
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unavailable Tickets");
+                throw new RuntimeException(throwable);
+            });
+            
             reservationRepository.save(reservationDto.toReservation());
             //to make it more efficient, can also add a ref. of reservation to the particular user.
+        } catch (ResponseStatusException e) {
+            System.out.println("Caught a ResponseStatusException");
+            throw e;
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
